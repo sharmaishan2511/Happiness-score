@@ -15,10 +15,11 @@ from src.components.model_trainer import ModelTrainer
 
 @dataclass
 class DataIngestionConfig:
-    train_data_path: str=os.path.join('artifacts',"train.csv")
-    test_data_path: str=os.path.join('artifacts',"test.csv")
+    X_train_data_path: str=os.path.join('artifacts',"xtrain.csv")
+    X_test_data_path: str=os.path.join('artifacts',"xtest.csv")
+    y_train_data_path: str=os.path.join('artifacts',"ytrain.csv")
+    y_test_data_path: str=os.path.join('artifacts',"ytest.csv")
     raw_data_path: str=os.path.join('artifacts',"data.csv")
-
 class DataIngestion:
     def __init__(self):
         self.ingestion_config=DataIngestionConfig()
@@ -27,24 +28,30 @@ class DataIngestion:
         logging.info("Entered the data ingestion method or component")
         try:
             df=pd.read_csv('notebook/data/happ.csv')
+
+            X = df.drop(["Score"],axis=1)
+            y= df.Score
             logging.info('Read the dataset as dataframe')
 
-            os.makedirs(os.path.dirname(self.ingestion_config.train_data_path),exist_ok=True)
+            os.makedirs(os.path.dirname(self.ingestion_config.X_train_data_path),exist_ok=True)
 
             df.to_csv(self.ingestion_config.raw_data_path,index=False,header=True)
 
             logging.info("Train test split initiated")
-            train_set,test_set=train_test_split(df,test_size=0.2)
+            X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.15)
 
-            train_set.to_csv(self.ingestion_config.train_data_path,index=False,header=True)
-
-            test_set.to_csv(self.ingestion_config.test_data_path,index=False,header=True)
+            X_train.to_csv(self.ingestion_config.X_train_data_path,index=False,header=True)
+            X_test.to_csv(self.ingestion_config.X_test_data_path,index=False,header=True)
+            y_train.to_csv(self.ingestion_config.y_train_data_path,index=False,header=True)
+            y_test.to_csv(self.ingestion_config.y_test_data_path,index=False,header=True)
 
             logging.info("Inmgestion of the data iss completed")
 
             return(
-                self.ingestion_config.train_data_path,
-                self.ingestion_config.test_data_path
+                self.ingestion_config.X_train_data_path,
+                self.ingestion_config.X_test_data_path,
+                self.ingestion_config.y_train_data_path,
+                self.ingestion_config.y_test_data_path,
 
             )
         except Exception as e:
@@ -52,10 +59,10 @@ class DataIngestion:
 
 if __name__=="__main__":
     obj=DataIngestion()
-    train_data,test_data=obj.initiate_data_ingestion()
+    X_train,X_test,y_train,y_test=obj.initiate_data_ingestion()
 
     data_transformation=DataTransformation()
-    train_arr,test_arr,_=data_transformation.initiate_data_transformation(train_data,test_data)
+    X_train,X_test,y_train,y_test,_=data_transformation.initiate_data_transformation(X_train,X_test,y_train,y_test)
 
     modeltrainer=ModelTrainer()
-    print(modeltrainer.initiate_model_trainer(train_arr,test_arr))
+    print(modeltrainer.initiate_model_trainer(X_train,X_test,y_train,y_test))

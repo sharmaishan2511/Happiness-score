@@ -4,9 +4,9 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import os
-from sklearn.impute import SimpleImputer
 from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 
 from src.exception import CustomException
 from src.logger import logging
@@ -26,7 +26,9 @@ class DataTransformation:
 
             num_pipeline= Pipeline(
                 steps=[
-                ("imputer",SimpleImputer(strategy="median"))
+                
+                ("scaler",StandardScaler())
+
                 ]
             )
             
@@ -43,11 +45,13 @@ class DataTransformation:
         except Exception as e:
             raise CustomException(e,sys)
     
-    def initiate_data_transformation(self,train_path,test_path):
+    def initiate_data_transformation(self,X_train_path,X_test_path,y_train_path,y_test_path):
 
         try:
-            train_df=pd.read_csv(train_path)
-            test_df=pd.read_csv(test_path)
+            X_train=pd.read_csv(X_train_path)
+            X_test=pd.read_csv(X_test_path)
+            y_train=pd.read_csv(y_train_path)
+            y_test=pd.read_csv(y_test_path)
 
             logging.info("Read train and test data completed")
 
@@ -55,26 +59,30 @@ class DataTransformation:
 
             preprocessing_obj=self.get_data_transformer_object()
 
-            target_column_name="Score"
+            '''target_column_name="Score"
             numerical_columns = ["GDP per capita","Social support","Healthy life expectancy","Freedom to make life choices","Generosity","Perceptions of corruption"]
 
             input_feature_train_df=train_df.drop(columns=[target_column_name],axis=1)
             target_feature_train_df=train_df[target_column_name]
 
             input_feature_test_df=test_df.drop(columns=[target_column_name],axis=1)
-            target_feature_test_df=test_df[target_column_name]
+            target_feature_test_df=test_df[target_column_name]'''
 
             logging.info(
                 f"Applying preprocessing object on training dataframe and testing dataframe."
             )
 
-            input_feature_train_arr=preprocessing_obj.fit_transform(input_feature_train_df)
-            input_feature_test_arr=preprocessing_obj.transform(input_feature_test_df)
+            X_train=preprocessing_obj.fit_transform(X_train)
+            X_test=preprocessing_obj.transform(X_test)
 
-            train_arr = np.c_[
+            y_train = np.array(y_train).ravel()
+            y_test = np.array(y_test).ravel()
+            
+
+            '''train_arr = np.c_[
                 input_feature_train_arr, np.array(target_feature_train_df)
             ]
-            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]
+            test_arr = np.c_[input_feature_test_arr, np.array(target_feature_test_df)]'''
 
             logging.info(f"Saved preprocessing object.")
 
@@ -86,8 +94,7 @@ class DataTransformation:
             )
 
             return (
-                train_arr,
-                test_arr,
+                X_train,X_test,y_train,y_test,
                 self.data_transformation_config.preprocessor_obj_file_path,
             )
         except Exception as e:

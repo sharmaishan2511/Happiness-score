@@ -23,7 +23,8 @@ def save_object(file_path, obj):
 
 def evaluate_models(X_train, y_train,X_test,y_test,models):
     try:
-        report = {}
+        report = 2
+        modelname = "none"
 
         for i in range(len(list(models))):
             model = list(models.values())[i]
@@ -38,9 +39,13 @@ def evaluate_models(X_train, y_train,X_test,y_test,models):
 
             test_model_score = r2_score(y_test, y_test_pred)
 
-            report[list(models.keys())[i]] = test_model_score
+            if((train_model_score>0.6 and test_model_score>0.6) and abs(train_model_score-test_model_score)<report):
+                report= abs(train_model_score-test_model_score)
+                modelname = list(models.keys())[i]
 
-        return report
+            #report[list(models.keys())[i]] = [train_model_score,test_model_score]
+
+        return modelname,report
 
     except Exception as e:
         raise CustomException(e, sys)
