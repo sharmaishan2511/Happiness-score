@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happiness Score</title>
+    <style>
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .col {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: bold;
+        }
+
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        h2 {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Happiness Score Prediction</h1>
+        <form action="{{ url_for('predict_datapoint')}}" method="post">
+            <div class="col">
+                <label class="form-label" for="gdp">GDP</label>
+                <input type="number" id="gdp" name="GDP" step="0.001" required>
+            </div>
+            <div class="col">
+                <label class="form-label" for="socialSupport">Social Support</label>
+                <input type="number" id="socialSupport" name="SocialSupport" step="0.001" required>
+            </div>
+            <div class="col">
+                <label class="form-label" for="healthyLife">Healthy Life</label>
+                <input type="number" id="healthyLife" name="HealthyLife" step="0.001" required>
+            </div>
+            <div class="col">
+                <label class="form-label" for="freedom">Freedom</label>
+                <input type="number" id="freedom" name="Freedom" step="0.001" required>
+            </div>
+            <div class="col">
+                <label class="form-label" for="generosity">Generosity</label>
+                <input type="number" id="generosity" name="Generosity" step="0.001" required>
+            </div>
+            <div class="col">
+                <label class="form-label" for="corruption">Corruption</label>
+                <input type="number" id="corruption" name="Corruption" step="0.001" required>
+            </div>
+            <div class="col">
+                <input class="btn btn-primary" type="submit" value="Predict Happiness">
+            </div>
+        </form>
+
+        <h2>
+            THE prediction is {{results}}
+        </h2>
+    </div>
+</body>
+</html>

@@ -75,6 +75,8 @@ class DataTransformation:
             X_train=preprocessing_obj.fit_transform(X_train)
             X_test=preprocessing_obj.transform(X_test)
 
+            print(X_train)
+
             y_train = np.array(y_train).ravel()
             y_test = np.array(y_test).ravel()
             
